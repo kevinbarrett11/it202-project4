@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Week 9</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link href="https://unpkg.com/material-components-web@v4.0.0/dist/material-components-web.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/material-components-web@v4.0.0/dist/material-components-web.min.js"></script>
+
+  <style>
+    .view {
+      display: none;
+    }
+
+    :root {
+      --mdc-theme-primary: #FF0000	;
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <header class="mdc-top-app-bar" style="left: 0; top: 0;">
+    <div class="mdc-top-app-bar__row">
+      <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+        <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button">menu</button>
+        <span class="mdc-top-app-bar__title">Covid-19 Searcher</span>
+      </section>
+    </div>
+  </header>
+
+  <aside class="mdc-drawer mdc-drawer--modal">
+    <div class="mdc-drawer__content">
+      <nav class="mdc-list">
+        <a class="mdc-list-item mdc-list-item--activated" href="#home" aria-current="page">
+          <i class="material-icons mdc-list-item__graphic" aria-hidden="true">home</i>
+          <span class="mdc-list-item__text">Home</span>
+        </a>
+        <a class="mdc-list-item" href="#search">
+          <i class="material-icons mdc-list-item__graphic" aria-hidden="true">search</i>
+          <span class="mdc-list-item__text">Search</span>
+        </a>
+        <a class="mdc-list-item" href="#data">
+          <i class="material-icons mdc-list-item__graphic" aria-hidden="true">table_chart</i>
+          <span class="mdc-list-item__text">Data</span>
+        </a>
+          <a class="mdc-list-item" href="#data">
+          <i class="material-icons mdc-list-item__graphic" aria-hidden="true">show_chart</i>
+          <span class="mdc-list-item__text">Graph</span>
+        </a>
+          <a class="mdc-list-item" href="#about">
+          <i class="material-icons mdc-list-item__graphic" aria-hidden="true">info</i>
+          <span class="mdc-list-item__text">About</span>
+        </a>
+      </nav>
+    </div>
+  </aside>
+
+  <div class="mdc-drawer-scrim"></div>
+
+  <main class="main-content mdc-top-app-bar--fixed-adjust">
+
+    <div id="home" class="view">
+      <h1>Home</h1>
+      <p>This is the Data comes from https://pomber.github.io/covid19/timeseries.json.</p>
+    </div>
+      
+      
+      
+      <div id="search" class="view">
+      <h1>Search</h1>
+      <p>This is the compilation of the activities of week 9.</p>
+    </div>
+      
+      
+      
+    <div id="about" class="view">
+      <h1>About</h1>
+      <p>Hello my name is Kevin Barret. Im a CS student at UIC.</p>
+    </div>
+      
+      
+      
+      
+    <div id="data" class="view">
+      <h1 class="header">Data</h1>
+      <button id="GRAF" class="mdc-button mdc-button--raised">
+        <div class="mdc-button__ripple"></div>
+        <span class="mdc-button__label">GRAF</span>
+      </button>
+      <button id="SFD" class="mdc-button mdc-button--raised">
+        <div class="mdc-button__ripple"></div>
+        <span class="mdc-button__label">SFD</span>
+      </button>
+      <button id="CSF" class="mdc-button mdc-button--raised">
+        <div class="mdc-button__ripple"></div>
+        <span class="mdc-button__label">CSF</span>
+      </button>
+      <h2 id="data-title"></h2>
+      <ul id="data-list" class="mdc-list mdc-list--two-line">
+        <!-- <li class="mdc-list-item" tabindex="0">
+          <span class="mdc-list-item__text">
+            <span class="mdc-list-item__primary-text">Two-line item</span>
+            <span class="mdc-list-item__secondary-text">Secondary text</span>
+          </span>
+        </li> -->
+      </ul>
+
+
+    </div>
+  </main>
+  <script>
+    // Activity 9.1
+    let btns = document.querySelectorAll('.mdc-button')
+
+    let drawerEl = document.querySelector('.mdc-drawer')
+    const drawer = new mdc.drawer.MDCDrawer.attachTo(drawerEl)
+
+    let topAppBarEl = document.querySelector('.mdc-top-app-bar');
+    const topAppBar = new mdc.topAppBar.MDCTopAppBar.attachTo(topAppBarEl);
+
+    topAppBar.setScrollTarget(document.querySelector('.main-content'));
+    topAppBar.listen('MDCTopAppBar:nav', () => {
+      drawer.open = !drawer.open;
+    });
+
+    // Activity  9.2
+    document.querySelector('#home').style.display = 'block'
+    document.querySelectorAll('.mdc-drawer .mdc-list-item').forEach(item => {
+      item.addEventListener('click', () => {
+        document.querySelectorAll('.view').forEach(view => {
+          view.style.display = 'none'
+          if (`#${view.id}` === item.hash) {
+            console.log('match')
+            view.style.display = 'block'
+          }
+        })
+        drawer.open = !drawer.open
+      })
+    })
+
+    // Activity 9.3
+    let dataList = document.querySelector('#data-list')
+    for (const btn of btns) {
+      mdc.ripple.MDCRipple.attachTo(btn)
+      btn.addEventListener('click', () => {
+        fetch(`https://data.cityofchicago.org/resource/v6vf-nfxy.json?$limit=5&sr_short_code=${btn.id}`).then(res => res.json())
+          .then(data => {
+            document.querySelector('#data-title').innerText = data[0].sr_type
+            let iconType = 'sports_kabaddi'
+            if (data[0].sr_short_code === 'GRAF'){
+              iconType = 'gps_fixed'
+            } else if (data[0].sr_short_code === 'SFD'){
+              iconType = 'brightness_low'
+            }
+            dataList.innerHTML = ''
+            for (const item of data) {
+              let listItem = document.createElement('LI')
+              listItem.classList.add('mdc-list-item')
+              mdc.ripple.MDCRipple.attachTo(listItem)
+
+              let textItem = document.createElement('SPAN')
+              textItem.classList.add('mdc-list-item__text')
+
+              let primary = document.createElement('SPAN')
+              primary.classList.add('mdc-list-item__primary-text')
+
+              let secondary = document.createElement('SPAN')
+              secondary.classList.add('mdc-list-item__secondary-text')
+
+              let icon = document.createElement('I')
+              icon.classList.add('material-icons', 'mdc-list-item__graphic')
+
+              primary.appendChild(document.createTextNode(item.street_address))
+              secondary.appendChild(document.createTextNode(item.status))
+              icon.appendChild(document.createTextNode(iconType))
+
+              primary.prepend(icon)
+              textItem.appendChild(primary)
+              textItem.appendChild(secondary)
+              listItem.appendChild(textItem)
+              dataList.appendChild(listItem)
+            }
+          })
+          .catch(err => console.error(err))
+      })
+    }
+  </script>
+</body>
+
+</html>
