@@ -53,7 +53,7 @@
           <i class="material-icons mdc-list-item__graphic" aria-hidden="true">table_chart</i>
           <span class="mdc-list-item__text">Data</span>
         </a>
-          <a class="mdc-list-item" href="#data">
+          <a class="mdc-list-item" href="#graph">
           <i class="material-icons mdc-list-item__graphic" aria-hidden="true">show_chart</i>
           <span class="mdc-list-item__text">Graph</span>
         </a>
@@ -328,6 +328,12 @@
     </div>
       
       
+      <div id="graph" class="view">
+       <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+       <div id="chart_div"></div>
+    </div>
+      
+      
       
       
     <div id="data" class="view">
@@ -344,7 +350,8 @@
    let CountriesList = [];
    let Dates = [];
    let casesConfirmed = [];
-      
+   google.charts.load('current', {packages: ['corechart', 'line']});
+google.charts.setOnLoadCallback(drawLineColors);
       
       
       
@@ -358,6 +365,10 @@
  document.getElementById("demo").innerHTML = "Countries Selected: " + CountriesList;
 
 }
+      
+
+
+
       
 
   
@@ -381,17 +392,48 @@ function SearchData(){
            casesConfirmed.push(temp);
        });
     print();
+
   });
-     
+
+         drawLineColors();
+
  
 }
+      
+      function drawLineColors() {
+      var data = new google.visualization.DataTable();
+      data.addColumn('number', 'X');
+      data.addColumn('number', CountriesList[0]);
+    var numberCountries = CountriesList.length;         
+    var i;
+                         
+        for(i = 0 ; i < 92;i++){
+            data.addRows[Date[i],casesConfirmed[i]];
+          }
+    
+    
+
+      var options = {
+        hAxis: {
+          title: 'Time'
+        },
+        vAxis: {
+          title: 'Cases'
+        },
+        colors: ['#a52714']
+      };
+
+      var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+      chart.draw(data, options);
+    }
+      
       
       
       
          function print(){
     var numberCountries = CountriesList.length;         
     var len = casesConfirmed[0].length;
-          var i;
+    var i;
              
     if(numberCountries == 1){
             var table = document.getElementById("tableData");
